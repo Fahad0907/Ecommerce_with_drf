@@ -36,6 +36,7 @@ class Order(models.Model):
     couponCode = models.CharField(max_length=50, blank=True, null=True)
     discount = models.CharField(max_length=50, blank=True, null=True)
     amount = models.CharField(max_length=500, blank=True, null=True)
+    total = models.CharField(max_length=500, blank=True, null=True)
     
     def get_total_price(self):
         total = 0

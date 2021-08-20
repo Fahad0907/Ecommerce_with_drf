@@ -20,6 +20,7 @@ from django.conf import settings
 from django.conf.urls.static import static
 from Product.views import CategoryList, ShowProduct,  ShowProductDetails
 from Order.views import  ShowCart,IncrementQuantity, DecrementQuantity, ApplyCoupon, CheckOut
+from Account.views import Registration
 from rest_framework.authtoken.views import obtain_auth_token
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -31,7 +32,8 @@ urlpatterns = [
     path('plus/', IncrementQuantity.as_view()),
     path('minus/',DecrementQuantity.as_view()),
     path('coupon/',ApplyCoupon.as_view()),
-    path('checkout/',CheckOut.as_view())
+    path('checkout/',CheckOut.as_view()),
+    path('registration/', Registration.as_view())
 ]
 
 urlpatterns = urlpatterns + static(settings.MEDIA_URL, document_root = settings.MEDIA_ROOT)

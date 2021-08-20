@@ -51,9 +51,10 @@ class ShowCart(APIView):
     def get(self, request):
         orderQuery = Order.objects.filter(user = request.user, ordered=False)
         if orderQuery.exists():
-            orderQuery[0].amount = orderQuery[0].get_total_price()
-            orderQuery[0].save() 
+            if orderQuery[0].amount is None:
+                orderQuery.update(amount=orderQuery[0].get_total_price())
             
+           
             serializer = OrderSerializer(orderQuery ,many=True)
             s = serializer.data[0]
             for i in s['orderItems']:
@@ -71,7 +72,7 @@ class IncrementQuantity(APIView):
     authentication_classes = [TokenAuthentication]
     permission_classes = [IsAuthenticated]
 
-    def post(self, request):
+    def put(self, request):
         data = request.data
         order = Order.objects.filter(user=request.user, ordered=False)
         if order.exists():
@@ -109,24 +110,23 @@ class DecrementQuantity(APIView):
 class ApplyCoupon(APIView):
     authentication_classes = [TokenAuthentication]
     permission_classes = [IsAuthenticated]
-
     def post(self, request):
-        data = request.data
-        coupon_code = data['coupon']
-        check_coupon = Coupon.objects.filter(code = coupon_code)
-        order = Order.objects.filter(user=request.user, ordered=False)
-    
-        if check_coupon.exists() and order.exists() and order[0].couponCode is  None:
-            
+        order = Order.objects.filter(user= request.user, ordered=False)
+        cart = Cart.objects.filter(user = request.user, purchased=False)
+        
+        if order.exists() and cart.exists():
+            data = request.data
             current_time = timezone.now()
-            if check_coupon[0].endTime >= current_time and check_coupon[0].active:
-                discount = (float(check_coupon[0].discount) * order[0].get_total_price()) / 100
-                order.update(amount = order[0].get_total_price() - discount, couponCode=coupon_code,discount=check_coupon[0].discount)
-                
-               
-                return Response({"message":"Done"})
-        else:
-            return Response({"message":"Invalid Coupon"})
+            coupon = Coupon.objects.filter(code=data['coupon'])
+            if coupon.exists() and order[0].couponCode is None and coupon[0].endTime>= current_time:
+                discount = (float(coupon[0].discount) * order[0].get_total_price()) / 100
+
+                order.update(amount=order[0].get_total_price() - discount,couponCode=data['coupon'], discount=coupon[0].discount)
+                print(order[0].get_total_price() - discount)
+                return Response({"message": "Done"})
+            return Response({"message": "Coupon code is used"})
+            
+    
 
 
 class CheckOut(APIView):
