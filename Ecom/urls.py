@@ -22,6 +22,7 @@ from Product.views import CategoryList, ShowProduct,  ShowProductDetails
 from Order.views import  ShowCart,IncrementQuantity, DecrementQuantity, ApplyCoupon, CheckOut
 from Account.views import Registration, OrderList, UserInformation
 from rest_framework.authtoken.views import obtain_auth_token
+from Adminsite.views import Addproduct, UpdateProduct
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('',CategoryList.as_view()),
@@ -35,7 +36,9 @@ urlpatterns = [
     path('checkout/',CheckOut.as_view()),
     path('registration/', Registration.as_view()),
     path('orderlist/', OrderList.as_view()),
-    path('userinfo/', UserInformation.as_view())
+    path('userinfo/', UserInformation.as_view()),
+    path('addproduct/',Addproduct.as_view()),
+    path('updateproduct/',UpdateProduct.as_view()),
 ]
 
 urlpatterns = urlpatterns + static(settings.MEDIA_URL, document_root = settings.MEDIA_ROOT)

@@ -43,7 +43,8 @@ INSTALLED_APPS = [
     'corsheaders',
     'rest_framework.authtoken',
     'Order',
-    'Coupon'
+    'Coupon',
+    'Adminsite'
 ]
 
 MIDDLEWARE = [

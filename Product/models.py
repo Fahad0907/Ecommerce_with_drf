@@ -26,6 +26,16 @@ class ProductDetails(models.Model):
 class ProductVariation(models.Model):
     productID = models.ForeignKey(ProductDetails, on_delete=models.CASCADE) 
     type = models.CharField(max_length=50)
+    
+    value = models.CharField(max_length=50)
+
+    def __str__(self):
+        return self.type
+
+class Variation(models.Model):
+    productID = models.ForeignKey(ProductDetails, on_delete=models.CASCADE) 
+    variationtype = models.CharField(max_length=50)
+    
     value = models.CharField(max_length=50)
 
     def __str__(self):
