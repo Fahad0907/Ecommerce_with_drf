@@ -21,31 +21,21 @@ class Addproduct(APIView):
     permission_classes = [IsAuthenticated]
 
     def post(self, request):
-         
-        try:
-            hold_request = request.data
-            get_category_id = Category.objects.get(name=hold_request['categoryKey'])
-            
-            
-            product = ProductDetails.objects.create(productName=hold_request['productName'],description=hold_request['description'],
-            price=hold_request['price'], discountVal=hold_request['discountVal'], categoryKey=get_category_id, image=hold_request['image'])
-            get_id = ProductDetails.objects.get(productName=hold_request['productName'])
-          
-            size = hold_request['size']
-            size = size.split(",")
-
-            for sizes in size:
-                if sizes:
-                    ProductVariation.objects.create(productID_id=get_id.id, type = 'Size',  value= sizes)
-                
-
-            colors = hold_request['color'].split(' ')
-            for color in colors:
-                ProductVariation.objects.create(productID_id=get_id.id, type = 'Color', value= color)
+        get_category_id = Category.objects.get(name=request.data['categoryKey'])
+        serializer = ProductSerializer(data = request.data)
+        if serializer.is_valid():
+            serializer.save(categoryKey_id=get_category_id.id)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    def put(self, request, id):
+        query = ProductDetails.objects.get(id=id)
+        print(id)
+        serializer = ProductSerializer( query, data = request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST) 
         
-            return Response({"error":False, "message" : "done"})
-        except:
-            return Response({"error":True, "message" : "problem"})
     
     def get(self, request):
         query = Category.objects.all()
@@ -53,18 +43,25 @@ class Addproduct(APIView):
         return Response(serializer.data)
 
 class UpdateProduct(APIView):
-    authentication_classes = [TokenAuthentication]
-    permission_classes = [IsAuthenticated]
-
+    #authentication_classes = [TokenAuthentication]
+    #permission_classes = [IsAuthenticated]
+    def get(self, request, id):
+        query_for_product = ProductDetails.objects.get(id=id)
+        productData = ProductSerializer(query_for_product)
+        return Response({ "product" : productData.data})
     def post(self, request):
         get_category_id = Category.objects.get(name=request.data['category'])
         query = ProductDetails.objects.filter(categoryKey=get_category_id )
         serializer = ProductSerializer(query, many=True)
         return Response(serializer.data)
-    def put(self, request):
-        print(request.data['image'])
-        
-        return Response({"message" : "done"})
+    def put(self, request, id):
+        query = ProductDetails.objects.get(id=id)
+        print(request.data)
+        serializer = ProductSerializer( query, data = request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST) 
 
     def delete(self, request):
        
@@ -75,6 +72,5 @@ class UpdateProduct(APIView):
         except:
             return Response({"message" : "Error"})
     
-
 
 

@@ -39,6 +39,8 @@ urlpatterns = [
     path('userinfo/', UserInformation.as_view()),
     path('addproduct/',Addproduct.as_view()),
     path('updateproduct/',UpdateProduct.as_view()),
+    path('updateproduct/<int:id>/',UpdateProduct.as_view()),
+    
 ]
 
 urlpatterns = urlpatterns + static(settings.MEDIA_URL, document_root = settings.MEDIA_ROOT)
